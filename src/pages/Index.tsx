@@ -452,9 +452,7 @@ export default function Index() {
                 {/* Г-образный стол */}
 
 
-                {/* Монитор */}
-                <rect x="120" y="235" width="16" height="11" rx="1" fill="#2563EB" opacity="0.55"/>
-                <rect x="126" y="246" width="4" height="3" rx="0" fill="#2563EB" opacity="0.3"/>
+
                 {/* Кресло */}
                 <circle cx="110" cy="292" r="10" fill="#93C5FD" opacity="0.55" stroke="#2563EB" strokeWidth="0.8"/>
                 {/* Стойка выдачи книг */}
