@@ -451,7 +451,7 @@ export default function Index() {
                 <rect x="83" y="220" width="117" height="197" fill="#EFF6FF" stroke="#2563EB" strokeWidth="1.5"/>
                 {/* Г-образный стол */}
                 <rect x="93" y="250" width="60" height="28" rx="3" fill="#BFDBFE" stroke="#2563EB" strokeWidth="1"/>
-                <rect x="113" y="232" width="28" height="48" rx="3" fill="#BFDBFE" stroke="#2563EB" strokeWidth="1"/>
+
                 {/* Монитор */}
                 <rect x="120" y="235" width="16" height="11" rx="1" fill="#2563EB" opacity="0.55"/>
                 <rect x="126" y="246" width="4" height="3" rx="0" fill="#2563EB" opacity="0.3"/>
