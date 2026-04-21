@@ -309,24 +309,32 @@ export default function Index() {
               ))}
 
               {/* ── Внешние стены ── */}
-              {/* Верхняя стена */}
-              <rect x="57" y="77" width="838" height="6" fill="#374151" rx="2"/>
+              {/* Верхняя стена (дальняя — с окнами) */}
+              <rect x="57" y="77" width="355" height="6" fill="#374151" rx="2"/>
+              <rect x="538" y="77" width="357" height="6" fill="#374151" rx="2"/>
               {/* Нижняя стена */}
               <rect x="57" y="451" width="838" height="6" fill="#374151" rx="2"/>
               {/* Левая стена (с проёмом входа) */}
               <rect x="57" y="77" width="6" height="253" fill="#374151" rx="2"/>
               <rect x="57" y="360" width="6" height="97" fill="#374151" rx="2"/>
-              {/* Правая стена с 6 окнами */}
+              {/* Правая торцевая стена */}
               <rect x="889" y="77" width="6" height="378" fill="#374151" rx="2"/>
 
-              {/* ── 6 Окон (правая стена) ── */}
-              {[100,160,220,280,340,400].map((dy, i) => (
-                <g key={`win${i}`}>
-                  <rect x="886" y={80 + dy} width="9" height="36" fill="#BAE6FD" stroke="#7DD3FC" strokeWidth="1" rx="1"/>
-                  <line x1="890" y1={80+dy} x2="890" y2={80+dy+36} stroke="#7DD3FC" strokeWidth="0.8"/>
-                </g>
-              ))}
-              <text x="908" y="270" textAnchor="middle" fontSize="8" fill="#0EA5E9" transform="rotate(90,908,270)">6 окон →</text>
+              {/* ── 6 Окон (верхняя длинная стена — напротив входа) ── */}
+              {[0,1,2,3,4,5].map((i) => {
+                const wx = 412 + i * 21;
+                return (
+                  <g key={`win${i}`}>
+                    <rect x={wx} y="74" width="16" height="9" rx="1"
+                      fill="#BAE6FD" stroke="#7DD3FC" strokeWidth="1"/>
+                    <line x1={wx+8} y1="74" x2={wx+8} y2="83" stroke="#7DD3FC" strokeWidth="0.7"/>
+                    {/* Световой луч внутрь */}
+                    <line x1={wx+3} y1="83" x2={wx+3} y2="120" stroke="#BAE6FD" strokeWidth="0.5" opacity="0.5"/>
+                    <line x1={wx+13} y1="83" x2={wx+13} y2="120" stroke="#BAE6FD" strokeWidth="0.5" opacity="0.5"/>
+                  </g>
+                );
+              })}
+              <text x="538" y="68" textAnchor="start" fontSize="8" fill="#0EA5E9">← 6 окон</text>
 
               {/* ── Вход (левая стена, середина по высоте) ── */}
               <rect x="54" y="330" width="9" height="52" fill="#f9fafb"/>
