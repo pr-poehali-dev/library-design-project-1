@@ -258,45 +258,193 @@ export default function Index() {
           </div>
         </div>
 
-        {/* All Zones Overview */}
+        {/* Floor Plan */}
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
-          <h4 className="font-bold text-gray-900 mb-5 flex items-center gap-2">
+          <h4 className="font-bold text-gray-900 mb-1 flex items-center gap-2">
             <Icon name="Map" size={18} className="text-gray-500" />
-            Все зоны — обзор
+            План помещения
           </h4>
-          <div className="grid md:grid-cols-3 gap-4">
+          <p className="text-xs text-gray-400 mb-5">Нажмите на зону, чтобы посмотреть детали</p>
+
+          <div className="w-full overflow-x-auto">
+            <svg
+              viewBox="0 0 800 520"
+              className="w-full max-w-3xl mx-auto"
+              style={{ minWidth: 320 }}
+            >
+              {/* Outer walls */}
+              <rect x="30" y="30" width="740" height="460" rx="12" fill="#f3f4f6" stroke="#d1d5db" strokeWidth="3" />
+
+              {/* Grid lines (floor tiles feel) */}
+              {Array.from({ length: 14 }).map((_, i) => (
+                <line key={`v${i}`} x1={30 + (i + 1) * 50} y1="30" x2={30 + (i + 1) * 50} y2="490" stroke="#e5e7eb" strokeWidth="0.5" />
+              ))}
+              {Array.from({ length: 8 }).map((_, i) => (
+                <line key={`h${i}`} x1="30" y1={30 + (i + 1) * 50} x2="770" y2={30 + (i + 1) * 50} stroke="#e5e7eb" strokeWidth="0.5" />
+              ))}
+
+              {/* === МУЛЬТСТУДИЯ (левая верхняя) === */}
+              <g
+                onClick={() => setActiveZone("multstudio")}
+                style={{ cursor: "pointer" }}
+              >
+                <rect
+                  x="40" y="40" width="310" height="220" rx="10"
+                  fill={activeZone === "multstudio" ? "#FFEECC" : "#FFF8EE"}
+                  stroke="#FF8C00"
+                  strokeWidth={activeZone === "multstudio" ? 3 : 1.5}
+                  style={{ transition: "all 0.2s" }}
+                />
+                {/* Интерактивные панели — левая стена */}
+                <rect x="40" y="70" width="8" height="80" rx="3" fill="#FF8C00" opacity="0.7" />
+                <rect x="40" y="160" width="8" height="40" rx="3" fill="#FFD166" opacity="0.7" />
+                {/* Экран */}
+                <rect x="70" y="58" width="120" height="70" rx="6" fill="#FF8C00" opacity="0.15" stroke="#FF8C00" strokeWidth="1.5" />
+                <rect x="78" y="64" width="104" height="52" rx="4" fill="#FF8C00" opacity="0.2" />
+                {/* Столы */}
+                <rect x="70" y="155" width="55" height="35" rx="4" fill="#FFD166" opacity="0.6" stroke="#FF8C00" strokeWidth="1" />
+                <rect x="140" y="155" width="55" height="35" rx="4" fill="#FFD166" opacity="0.6" stroke="#FF8C00" strokeWidth="1" />
+                <rect x="210" y="155" width="55" height="35" rx="4" fill="#FFD166" opacity="0.6" stroke="#FF8C00" strokeWidth="1" />
+                {/* Стулья */}
+                {[70, 87, 140, 157, 210, 227].map((x, i) => (
+                  <circle key={i} cx={x + 10} cy="202" r="6" fill="#FF8C00" opacity="0.35" />
+                ))}
+                {/* Метка */}
+                <text x="215" y="90" textAnchor="middle" fontSize="13" fontWeight="700" fill="#7A3800">Мультстудия</text>
+                <text x="215" y="108" textAnchor="middle" fontSize="9" fill="#FF6B00">~45 м²</text>
+                {/* Иконка */}
+                <circle cx="285" cy="200" r="16" fill="#FF8C00" opacity="0.9" />
+                <text x="285" y="205" textAnchor="middle" fontSize="14" fill="white">🎬</text>
+                {/* Подсветка активной зоны */}
+                {activeZone === "multstudio" && (
+                  <rect x="40" y="40" width="310" height="220" rx="10" fill="none" stroke="#FF8C00" strokeWidth="3" strokeDasharray="8 4" opacity="0.6" />
+                )}
+              </g>
+
+              {/* === СЕНСОРНАЯ КОМНАТА (левая нижняя) === */}
+              <g
+                onClick={() => setActiveZone("sensory")}
+                style={{ cursor: "pointer" }}
+              >
+                <rect
+                  x="40" y="270" width="310" height="210" rx="10"
+                  fill={activeZone === "sensory" ? "#EDD9FF" : "#F5EEFF"}
+                  stroke="#7B2FBE"
+                  strokeWidth={activeZone === "sensory" ? 3 : 1.5}
+                  style={{ transition: "all 0.2s" }}
+                />
+                {/* Пузырьковые колонны */}
+                <rect x="55" y="285" width="18" height="100" rx="9" fill="#7B2FBE" opacity="0.2" stroke="#7B2FBE" strokeWidth="1" />
+                <rect x="82" y="285" width="18" height="100" rx="9" fill="#C4A8E8" opacity="0.3" stroke="#7B2FBE" strokeWidth="1" />
+                {/* Пуфы и мягкая зона */}
+                <ellipse cx="200" cy="360" rx="45" ry="35" fill="#C4A8E8" opacity="0.4" stroke="#7B2FBE" strokeWidth="1" />
+                <circle cx="185" cy="352" r="14" fill="#7B2FBE" opacity="0.25" />
+                <circle cx="210" cy="365" r="12" fill="#C4A8E8" opacity="0.5" />
+                <circle cx="195" cy="375" r="10" fill="#7B2FBE" opacity="0.2" />
+                {/* Звёздное небо (точки на потолке) */}
+                {[[120,285],[150,290],[170,283],[240,288],[270,285],[300,290],[310,283]].map(([x,y],i) => (
+                  <circle key={i} cx={x} cy={y} r="2" fill="#7B2FBE" opacity="0.5" />
+                ))}
+                {/* Тактильные панели — нижняя стена */}
+                <rect x="110" y="470" width="50" height="8" rx="3" fill="#7B2FBE" opacity="0.5" />
+                <rect x="170" y="470" width="50" height="8" rx="3" fill="#C4A8E8" opacity="0.6" />
+                <rect x="230" y="470" width="50" height="8" rx="3" fill="#7B2FBE" opacity="0.4" />
+                {/* Метка */}
+                <text x="215" y="306" textAnchor="middle" fontSize="13" fontWeight="700" fill="#3A0A6A">Сенсорная комната</text>
+                <text x="215" y="322" textAnchor="middle" fontSize="9" fill="#5A1B9A">~30 м²</text>
+                {/* Иконка */}
+                <circle cx="305" cy="430" r="16" fill="#7B2FBE" opacity="0.9" />
+                <text x="305" y="435" textAnchor="middle" fontSize="14" fill="white">✨</text>
+                {activeZone === "sensory" && (
+                  <rect x="40" y="270" width="310" height="210" rx="10" fill="none" stroke="#7B2FBE" strokeWidth="3" strokeDasharray="8 4" opacity="0.6" />
+                )}
+              </g>
+
+              {/* === ИГРОТЕКА (правая большая) === */}
+              <g
+                onClick={() => setActiveZone("gameroom")}
+                style={{ cursor: "pointer" }}
+              >
+                <rect
+                  x="360" y="40" width="370" height="440" rx="10"
+                  fill={activeZone === "gameroom" ? "#CCFFDD" : "#EEFFF4"}
+                  stroke="#2E8B57"
+                  strokeWidth={activeZone === "gameroom" ? 3 : 1.5}
+                  style={{ transition: "all 0.2s" }}
+                />
+                {/* Стеллажи — правая стена */}
+                <rect x="718" y="55" width="12" height="200" rx="3" fill="#2E8B57" opacity="0.3" />
+                {[70,95,120,145,170,195,220].map((y, i) => (
+                  <rect key={i} x="718" y={y} width="12" height="8" rx="1" fill="#90EE90" opacity="0.6" />
+                ))}
+                {/* Игровые столы — модульные блоки */}
+                <rect x="380" y="80" width="70" height="50" rx="6" fill="#2E8B57" opacity="0.15" stroke="#2E8B57" strokeWidth="1.5" />
+                <rect x="465" y="80" width="70" height="50" rx="6" fill="#2E8B57" opacity="0.15" stroke="#2E8B57" strokeWidth="1.5" />
+                <rect x="550" y="80" width="70" height="50" rx="6" fill="#2E8B57" opacity="0.15" stroke="#2E8B57" strokeWidth="1.5" />
+                {/* Стулья вокруг столов */}
+                {[395,415,480,500,565,585].map((x, i) => (
+                  <circle key={i} cx={x} cy="143" r="7" fill="#2E8B57" opacity="0.25" />
+                ))}
+                {[395,415,480,500,565,585].map((x, i) => (
+                  <circle key={i} cx={x} cy="68" r="7" fill="#2E8B57" opacity="0.25" />
+                ))}
+                {/* Игровой центральный ковёр */}
+                <ellipse cx="545" cy="320" rx="130" ry="100" fill="#90EE90" opacity="0.25" stroke="#2E8B57" strokeWidth="1" strokeDasharray="6 3" />
+                {/* Интерактивная панель на полу */}
+                <rect x="430" y="280" width="110" height="80" rx="8" fill="#2E8B57" opacity="0.12" stroke="#2E8B57" strokeWidth="1.5" />
+                <text x="485" y="316" textAnchor="middle" fontSize="8" fill="#1A6B3C" opacity="0.8">интерактивный</text>
+                <text x="485" y="328" textAnchor="middle" fontSize="8" fill="#1A6B3C" opacity="0.8">пол</text>
+                {/* Магнитная стена — верхняя */}
+                <rect x="370" y="40" width="360" height="8" rx="3" fill="#2E8B57" opacity="0.4" />
+                <text x="550" y="52" textAnchor="middle" fontSize="8" fill="#1A6B3C">маркерная стена</text>
+                {/* Метка */}
+                <text x="545" y="210" textAnchor="middle" fontSize="15" fontWeight="700" fill="#0A3D20">Игротека</text>
+                <text x="545" y="230" textAnchor="middle" fontSize="9" fill="#1A6B3C">~80 м²</text>
+                {/* Иконка */}
+                <circle cx="690" cy="430" r="16" fill="#2E8B57" opacity="0.9" />
+                <text x="690" y="435" textAnchor="middle" fontSize="14" fill="white">🎮</text>
+                {activeZone === "gameroom" && (
+                  <rect x="360" y="40" width="370" height="440" rx="10" fill="none" stroke="#2E8B57" strokeWidth="3" strokeDasharray="8 4" opacity="0.6" />
+                )}
+              </g>
+
+              {/* Входная дверь */}
+              <rect x="340" y="480" width="60" height="10" rx="4" fill="#374151" />
+              <path d="M340 480 Q370 460 400 480" fill="none" stroke="#374151" strokeWidth="1.5" strokeDasharray="4 2" />
+              <text x="370" y="510" textAnchor="middle" fontSize="10" fill="#6b7280">Вход</text>
+
+              {/* Коридор между зонами */}
+              <line x1="350" y1="30" x2="350" y2="490" stroke="#d1d5db" strokeWidth="2" strokeDasharray="6 4" />
+              <line x1="40" y1="260" x2="350" y2="260" stroke="#d1d5db" strokeWidth="2" strokeDasharray="6 4" />
+
+              {/* Размеры */}
+              <text x="195" y="22" textAnchor="middle" fontSize="9" fill="#9ca3af">~14 м</text>
+              <text x="545" y="22" textAnchor="middle" fontSize="9" fill="#9ca3af">~20 м</text>
+              <text x="18" y="155" textAnchor="middle" fontSize="9" fill="#9ca3af" transform="rotate(-90, 18, 155)">~12 м</text>
+            </svg>
+          </div>
+
+          {/* Легенда */}
+          <div className="flex flex-wrap gap-3 mt-5 justify-center">
             {zones.map((z) => (
               <button
                 key={z.id}
                 onClick={() => setActiveZone(z.id)}
-                className="text-left p-4 rounded-2xl border-2 transition-all hover:shadow-md"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border-2 transition-all"
                 style={{
-                  borderColor: activeZone === z.id ? z.color : "#e5e7eb",
-                  backgroundColor: activeZone === z.id ? z.bgLight : "white",
+                  borderColor: z.color,
+                  backgroundColor: activeZone === z.id ? z.color : z.bgLight,
+                  color: activeZone === z.id ? "white" : z.textColor,
                 }}
               >
-                <div className="flex items-center gap-2 mb-3">
-                  <div
-                    className="w-8 h-8 rounded-xl flex items-center justify-center"
-                    style={{ backgroundColor: z.color }}
-                  >
-                    <Icon name={z.icon} size={16} className="text-white" />
-                  </div>
-                  <span className="font-bold text-gray-900">{z.title}</span>
-                </div>
-                <div className="flex gap-1.5">
-                  {z.wallColors.map((c) => (
-                    <div
-                      key={c.hex}
-                      className="w-5 h-5 rounded-full border-2 border-white shadow"
-                      style={{ backgroundColor: c.hex }}
-                      title={c.name}
-                    />
-                  ))}
-                </div>
-                <p className="text-xs text-gray-500 mt-2">{z.subtitle}</p>
+                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: activeZone === z.id ? "white" : z.color }} />
+                {z.title}
               </button>
             ))}
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs text-gray-500 bg-gray-100">
+              <Icon name="DoorOpen" size={12} />
+              Вход
+            </div>
           </div>
         </div>
       </section>
