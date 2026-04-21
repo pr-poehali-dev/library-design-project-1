@@ -317,36 +317,29 @@ export default function Index() {
               <rect x="77" y="57" width="806" height="6" fill="#1f2937"/>
               {/* Правая — глухая */}
               <rect x="877" y="57" width="6" height="366" fill="#1f2937"/>
-              {/* Нижняя — с 6 окнами (правая часть от входа) */}
-              {/* левый участок без окон */}
-              <rect x="77" y="417" width="403" height="6" fill="#1f2937"/>
-              {/* правый участок с окнами — разрывы */}
-              <rect x="480" y="417" width="34" height="6" fill="#1f2937"/>
-              <rect x="564" y="417" width="34" height="6" fill="#1f2937"/>
-              <rect x="648" y="417" width="34" height="6" fill="#1f2937"/>
-              <rect x="732" y="417" width="34" height="6" fill="#1f2937"/>
-              <rect x="816" y="417" width="34" height="6" fill="#1f2937"/>
-              <rect x="877" y="417" width="6" height="6" fill="#1f2937"/>
-              {/* 6 окон в нижней стене */}
-              {[514,598,682,766,850].map((wx,i)=>(
-                <g key={`win${i}`}>
-                  <rect x={wx} y="414" width="50" height="9" rx="1" fill="#BAE6FD" stroke="#38BDF8" strokeWidth="1.2"/>
-                  <line x1={wx+25} y1="414" x2={wx+25} y2="423" stroke="#38BDF8" strokeWidth="0.8"/>
-                  <line x1={wx+12} y1="414" x2={wx+8} y2="395" stroke="#BAE6FD" strokeWidth="0.6" opacity="0.6"/>
-                  <line x1={wx+38} y1="414" x2={wx+42} y2="395" stroke="#BAE6FD" strokeWidth="0.6" opacity="0.6"/>
-                </g>
-              ))}
-              {/* Шестое окно */}
-              <rect x="480" y="417" width="0" height="0"/>
-              {/* подпись окна */}
-              <text x="697" y="436" textAnchor="middle" fontSize="8" fill="#0284C7">— 5 окон —</text>
-              {/* ещё одно окно левее */}
-              <rect x="430" y="414" width="50" height="9" rx="1" fill="#BAE6FD" stroke="#38BDF8" strokeWidth="1.2"/>
-              <line x1="455" y1="414" x2="455" y2="423" stroke="#38BDF8" strokeWidth="0.8"/>
-              <line x1="442" y1="414" x2="438" y2="395" stroke="#BAE6FD" strokeWidth="0.6" opacity="0.6"/>
-              <line x1="468" y1="414" x2="472" y2="395" stroke="#BAE6FD" strokeWidth="0.6" opacity="0.6"/>
-              <text x="455" y="436" textAnchor="middle" fontSize="7.5" fill="#0284C7">окно</text>
-              <text x="697" y="446" textAnchor="middle" fontSize="7.5" fill="#0284C7">(6 окон всего)</text>
+              {/* Нижняя стена — 6 окон равномерно по всей длине */}
+              {/* Стена: 800px / 6 окон = ~133px на секцию, окно 60px, простенок ~73px */}
+              {/* Секции: простенок 36px | окно 60px | ... | простенок 37px */}
+              {[0,1,2,3,4,5].map(i => {
+                const wx = 80 + 16 + i * 133; // начало окна
+                return (
+                  <g key={`win${i}`}>
+                    {/* простенок до окна */}
+                    <rect x={i===0 ? 77 : wx-16} y="417" width={16} height="6" fill="#1f2937"/>
+                    {/* окно */}
+                    <rect x={wx} y="414" width="60" height="9" rx="1" fill="#BAE6FD" stroke="#38BDF8" strokeWidth="1.5"/>
+                    {/* импост по центру */}
+                    <line x1={wx+30} y1="414" x2={wx+30} y2="423" stroke="#38BDF8" strokeWidth="0.9"/>
+                    {/* лучи света */}
+                    <line x1={wx+15} y1="414" x2={wx+10} y2="390" stroke="#BAE6FD" strokeWidth="0.7" opacity="0.55"/>
+                    <line x1={wx+45} y1="414" x2={wx+50} y2="390" stroke="#BAE6FD" strokeWidth="0.7" opacity="0.55"/>
+                  </g>
+                );
+              })}
+              {/* Правый простенок после последнего окна */}
+              <rect x={80+16+5*133+60} y="417" width={880-(80+16+5*133+60)} height="6" fill="#1f2937"/>
+              {/* Подпись */}
+              <text x="480" y="436" textAnchor="middle" fontSize="8" fill="#0284C7">☀ 6 окон — равномерно по правой стене от входа</text>
 
               {/* Левая стена — с проёмом входа */}
               <rect x="77" y="57" width="6" height="155" fill="#1f2937"/>
