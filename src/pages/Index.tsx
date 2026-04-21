@@ -450,7 +450,7 @@ export default function Index() {
               <g style={{cursor:"default"}}>
                 <rect x="83" y="220" width="117" height="197" fill="#EFF6FF" stroke="#2563EB" strokeWidth="1.5"/>
                 {/* Г-образный стол */}
-                <rect x="93" y="250" width="60" height="28" rx="3" fill="#BFDBFE" stroke="#2563EB" strokeWidth="1"/>
+
 
                 {/* Монитор */}
                 <rect x="120" y="235" width="16" height="11" rx="1" fill="#2563EB" opacity="0.55"/>
