@@ -268,306 +268,281 @@ export default function Index() {
 
           <div className="w-full overflow-x-auto">
             <svg
-              viewBox="0 0 960 620"
+              viewBox="0 0 960 480"
               className="w-full max-w-4xl mx-auto"
               style={{ minWidth: 380 }}
             >
               {/*
-                ПЛАН ПОМЕЩЕНИЯ 115,2 м² (16м × 7,2м)
-                Ориентация: левая стена = вход, правая стена = 6 окон
-                Масштаб: 1м ≈ 52px   →   16м × 7.2м = 832 × 374px
-                SVG canvas: 960×620, поле плана: x=60..892, y=80..454
-                Ширина плана (X): 832px = 16м
-                Высота плана (Y): 374px = 7.2м
+                ПЛАН 115,2 м²  (16 м × 7,2 м)
+                canvas 960 × 560
+                Поле плана: x=80..880 (800px=16м, 1м=50px), y=60..420 (360px=7,2м, 1м=50px)
 
-                Зоны (слева направо, сверху вниз):
-                  Левая стена (x=60):
-                    [Вход снизу, x=60, y≈380]
-                    Стеллажи книг:  x=60,  y=80,  w=100, h=374  (вдоль левой стены)
-                    Рабочее место:  x=60,  y=290, w=100, h=164  (справа от входа, вдоль левой стены снизу)
-                  Верхняя часть (y=80..230):
-                    Мультстудия:    x=160, y=80,  w=170, h=150
-                    Сем. чтение:    x=330, y=80,  w=170, h=150  (угол верх-центр)
-                    Игротека:       x=500, y=80,  w=180, h=150  (верхний правый угол)
-                  Нижняя часть (y=270..454):
-                    Сенсорная:      x=160, y=270, w=170, h=184  (правая стена снизу — нет, по описанию "правая стена от входа")
-                    Читалкин:       x=330, y=270, w=180, h=184
-                  Центр:
-                    Читальный зал:  x=500, y=270, w=392, h=184  (середина + вниз-право)
-                    ... пересмотрено ниже по реальной схеме
+                СТЕНЫ:
+                  Левая  (x=80)  — ВХОД посередине (y≈215..265)
+                  Правая (x=880) — глухая
+                  Верхняя (y=60) — глухая
+                  Нижняя (y=420) — 6 ОКОН (правая сторона от входа)
+
+                ЗОНЫ (слева→право вдоль верхней стены, потом центр, потом нижняя полоса):
+                  [верхняя полоса, y=60..220]
+                  A. Стеллажи книг     x=80..200,  y=60..220   (вдоль левой+верхней стены)
+                  B. Мультстудия       x=200..370, y=60..220
+                  C. Сем. чтение       x=370..530, y=60..220   (угол)
+                  D. Игротека          x=530..880, y=60..220   (правый верхний угол)
+
+                  [центр]
+                  E. Читальный зал     x=200..700, y=220..420  (большая центральная зона)
+
+                  [нижняя полоса, y=300..420, правая часть]
+                  F. Сенсорная         x=700..800, y=220..340
+                  G. Читалкин          x=700..880, y=340..420
+
+                  [левая нижняя часть]
+                  H. Библиотекарь      x=80..200,  y=220..420  (справа от входа)
               */}
 
               {/* ── Фон пола ── */}
-              <rect x="60" y="80" width="832" height="374" fill="#f9fafb" />
+              <rect x="80" y="60" width="800" height="360" fill="#f9fafb"/>
 
-              {/* ── Плиточная сетка ── */}
-              {Array.from({ length: 32 }).map((_, i) => (
-                <line key={`gv${i}`} x1={60 + (i+1)*26} y1="80" x2={60 + (i+1)*26} y2="454" stroke="#e5e7eb" strokeWidth="0.4" />
+              {/* ── Сетка плитки ── */}
+              {Array.from({length:31}).map((_,i)=>(
+                <line key={`gv${i}`} x1={80+(i+1)*25} y1="60" x2={80+(i+1)*25} y2="420" stroke="#e5e7eb" strokeWidth="0.4"/>
               ))}
-              {Array.from({ length: 14 }).map((_, i) => (
-                <line key={`gh${i}`} x1="60" y1={80 + (i+1)*26} x2="892" y2={80 + (i+1)*26} stroke="#e5e7eb" strokeWidth="0.4" />
+              {Array.from({length:13}).map((_,i)=>(
+                <line key={`gh${i}`} x1="80" y1={60+(i+1)*25} x2="880" y2={60+(i+1)*25} stroke="#e5e7eb" strokeWidth="0.4"/>
               ))}
 
-              {/* ── Внешние стены ── */}
-              {/* Верхняя стена (дальняя — с окнами) */}
-              <rect x="57" y="77" width="355" height="6" fill="#374151" rx="2"/>
-              <rect x="538" y="77" width="357" height="6" fill="#374151" rx="2"/>
-              {/* Нижняя стена */}
-              <rect x="57" y="451" width="838" height="6" fill="#374151" rx="2"/>
-              {/* Левая стена (с проёмом входа) */}
-              <rect x="57" y="77" width="6" height="253" fill="#374151" rx="2"/>
-              <rect x="57" y="360" width="6" height="97" fill="#374151" rx="2"/>
-              {/* Правая торцевая стена */}
-              <rect x="889" y="77" width="6" height="378" fill="#374151" rx="2"/>
+              {/* ══ СТЕНЫ ══ */}
+              {/* Верхняя — глухая */}
+              <rect x="77" y="57" width="806" height="6" fill="#1f2937"/>
+              {/* Правая — глухая */}
+              <rect x="877" y="57" width="6" height="366" fill="#1f2937"/>
+              {/* Нижняя — с 6 окнами (правая часть от входа) */}
+              {/* левый участок без окон */}
+              <rect x="77" y="417" width="403" height="6" fill="#1f2937"/>
+              {/* правый участок с окнами — разрывы */}
+              <rect x="480" y="417" width="34" height="6" fill="#1f2937"/>
+              <rect x="564" y="417" width="34" height="6" fill="#1f2937"/>
+              <rect x="648" y="417" width="34" height="6" fill="#1f2937"/>
+              <rect x="732" y="417" width="34" height="6" fill="#1f2937"/>
+              <rect x="816" y="417" width="34" height="6" fill="#1f2937"/>
+              <rect x="877" y="417" width="6" height="6" fill="#1f2937"/>
+              {/* 6 окон в нижней стене */}
+              {[514,598,682,766,850].map((wx,i)=>(
+                <g key={`win${i}`}>
+                  <rect x={wx} y="414" width="50" height="9" rx="1" fill="#BAE6FD" stroke="#38BDF8" strokeWidth="1.2"/>
+                  <line x1={wx+25} y1="414" x2={wx+25} y2="423" stroke="#38BDF8" strokeWidth="0.8"/>
+                  <line x1={wx+12} y1="414" x2={wx+8} y2="395" stroke="#BAE6FD" strokeWidth="0.6" opacity="0.6"/>
+                  <line x1={wx+38} y1="414" x2={wx+42} y2="395" stroke="#BAE6FD" strokeWidth="0.6" opacity="0.6"/>
+                </g>
+              ))}
+              {/* Шестое окно */}
+              <rect x="480" y="417" width="0" height="0"/>
+              {/* подпись окна */}
+              <text x="697" y="436" textAnchor="middle" fontSize="8" fill="#0284C7">— 5 окон —</text>
+              {/* ещё одно окно левее */}
+              <rect x="430" y="414" width="50" height="9" rx="1" fill="#BAE6FD" stroke="#38BDF8" strokeWidth="1.2"/>
+              <line x1="455" y1="414" x2="455" y2="423" stroke="#38BDF8" strokeWidth="0.8"/>
+              <line x1="442" y1="414" x2="438" y2="395" stroke="#BAE6FD" strokeWidth="0.6" opacity="0.6"/>
+              <line x1="468" y1="414" x2="472" y2="395" stroke="#BAE6FD" strokeWidth="0.6" opacity="0.6"/>
+              <text x="455" y="436" textAnchor="middle" fontSize="7.5" fill="#0284C7">окно</text>
+              <text x="697" y="446" textAnchor="middle" fontSize="7.5" fill="#0284C7">(6 окон всего)</text>
 
-              {/* ── 6 Окон (верхняя длинная стена — напротив входа) ── */}
-              {[0,1,2,3,4,5].map((i) => {
-                const wx = 412 + i * 21;
-                return (
-                  <g key={`win${i}`}>
-                    <rect x={wx} y="74" width="16" height="9" rx="1"
-                      fill="#BAE6FD" stroke="#7DD3FC" strokeWidth="1"/>
-                    <line x1={wx+8} y1="74" x2={wx+8} y2="83" stroke="#7DD3FC" strokeWidth="0.7"/>
-                    {/* Световой луч внутрь */}
-                    <line x1={wx+3} y1="83" x2={wx+3} y2="120" stroke="#BAE6FD" strokeWidth="0.5" opacity="0.5"/>
-                    <line x1={wx+13} y1="83" x2={wx+13} y2="120" stroke="#BAE6FD" strokeWidth="0.5" opacity="0.5"/>
-                  </g>
-                );
-              })}
-              <text x="538" y="68" textAnchor="start" fontSize="8" fill="#0EA5E9">← 6 окон</text>
+              {/* Левая стена — с проёмом входа */}
+              <rect x="77" y="57" width="6" height="155" fill="#1f2937"/>
+              <rect x="77" y="265" width="6" height="158" fill="#1f2937"/>
+              {/* Дуга открывания двери */}
+              <path d="M83 212 Q120 212 120 265" fill="none" stroke="#374151" strokeWidth="1.5" strokeDasharray="5 3"/>
+              <rect x="77" y="212" width="6" height="53" fill="#BAE6FD" opacity="0.3"/>
+              {/* Подпись входа */}
+              <text x="50" y="232" textAnchor="middle" fontSize="9" fontWeight="700" fill="#1f2937">ВХОД</text>
+              <text x="50" y="245" textAnchor="middle" fontSize="11" fill="#374151">⟶</text>
 
-              {/* ── Вход (левая стена, середина по высоте) ── */}
-              <rect x="54" y="330" width="9" height="52" fill="#f9fafb"/>
-              <path d="M60 330 Q85 356 60 382" fill="none" stroke="#374151" strokeWidth="1.2" strokeDasharray="4 2"/>
-              <text x="30" y="358" textAnchor="middle" fontSize="9" fontWeight="600" fill="#374151">ВХОД</text>
-              <text x="30" y="370" textAnchor="middle" fontSize="8" fill="#6b7280">⟶</text>
-
-              {/* ══════════════════════════════════════════
-                  ЗОНА 1: СТЕЛЛАЖИ С КНИГАМИ
-                  Левая стена, вдоль неё сверху — 6 стеллажей
-              ══════════════════════════════════════════ */}
-              <g style={{ cursor: "default" }}>
-                <rect x="62" y="82" width="95" height="245" rx="0"
-                  fill="#FEF3C7" stroke="#D97706" strokeWidth="1.5"/>
-                {/* 6 стеллажей */}
-                {[0,1,2,3,4,5].map(i => (
-                  <g key={`shelf${i}`}>
-                    <rect x="66" y={90 + i*38} width="83" height="30" rx="3"
-                      fill="#FDE68A" stroke="#D97706" strokeWidth="1" opacity="0.8"/>
-                    {/* полки */}
-                    <line x1="66" y1={90+i*38+10} x2="149" y2={90+i*38+10} stroke="#B45309" strokeWidth="0.6"/>
-                    <line x1="66" y1={90+i*38+20} x2="149" y2={90+i*38+20} stroke="#B45309" strokeWidth="0.6"/>
-                    {/* книги */}
-                    {[0,1,2,3,4,5,6].map(j => (
-                      <rect key={j} x={68+j*11} y={90+i*38+2} width="9" height="8" rx="1"
-                        fill={["#EF4444","#3B82F6","#10B981","#F59E0B","#8B5CF6","#EC4899","#6366F1"][j]}
-                        opacity="0.7"/>
+              {/* ══ ЗОНА A: СТЕЛЛАЖИ С КНИГАМИ (левый верхний угол) ══ */}
+              <g style={{cursor:"default"}}>
+                <rect x="83" y="63" width="117" height="157" fill="#FFFBEB" stroke="#D97706" strokeWidth="1.5"/>
+                {[0,1,2,3,4,5].map(i=>(
+                  <g key={`sh${i}`}>
+                    <rect x="88" y={68+i*25} width="107" height="19" rx="2" fill="#FDE68A" stroke="#D97706" strokeWidth="0.8" opacity="0.85"/>
+                    <line x1="88" y1={68+i*25+9} x2="195" y2={68+i*25+9} stroke="#B45309" strokeWidth="0.5"/>
+                    {[0,1,2,3,4,5,6,7,8].map(j=>(
+                      <rect key={j} x={90+j*12} y={69+i*25} width="10" height="7" rx="1"
+                        fill={["#EF4444","#3B82F6","#10B981","#F59E0B","#8B5CF6","#EC4899","#6366F1","#14B8A6","#F97316"][j]}
+                        opacity="0.75"/>
                     ))}
                   </g>
                 ))}
-                <text x="109" y="347" textAnchor="middle" fontSize="8" fontWeight="700" fill="#92400E">📚 Стеллажи</text>
-                <text x="109" y="358" textAnchor="middle" fontSize="7" fill="#B45309">6 стеллажей</text>
+                <text x="141" y="194" textAnchor="middle" fontSize="9" fontWeight="700" fill="#92400E">📚 Стеллажи</text>
+                <text x="141" y="206" textAnchor="middle" fontSize="7.5" fill="#B45309">6 стеллажей с книгами</text>
               </g>
 
-              {/* ══════════════════════════════════════════
-                  ЗОНА 2: РАБОЧЕЕ МЕСТО БИБЛИОТЕКАРЯ
-                  Справа от входа (правая нижняя часть левой стены)
-              ══════════════════════════════════════════ */}
-              <g style={{ cursor: "default" }}>
-                <rect x="62" y="332" width="95" height="118" rx="0"
-                  fill="#E0F2FE" stroke="#0284C7" strokeWidth="1.5"/>
-                {/* Стол Г-образный */}
-                <rect x="70" y="360" width="55" height="28" rx="3" fill="#BAE6FD" stroke="#0284C7" strokeWidth="1"/>
-                <rect x="90" y="345" width="28" height="44" rx="3" fill="#BAE6FD" stroke="#0284C7" strokeWidth="1"/>
-                {/* Монитор */}
-                <rect x="97" y="348" width="16" height="11" rx="1" fill="#0284C7" opacity="0.6"/>
-                {/* Кресло */}
-                <circle cx="85" cy="400" r="9" fill="#0EA5E9" opacity="0.35"/>
-                <text x="109" y="430" textAnchor="middle" fontSize="8" fontWeight="700" fill="#075985">🖥 Библиотекарь</text>
-                <text x="109" y="441" textAnchor="middle" fontSize="7" fill="#0284C7">рабочее место</text>
-              </g>
-
-              {/* ══════════════════════════════════════════
-                  ЗОНА 3: МУЛЬТСТУДИЯ
-                  Левая часть, верхняя половина, после стеллажей
-              ══════════════════════════════════════════ */}
-              <g onClick={() => setActiveZone("multstudio")} style={{ cursor: "pointer" }}>
-                <rect x="157" y="82" width="185" height="190" rx="0"
-                  fill={activeZone === "multstudio" ? "#FFEDD5" : "#FFF7ED"}
-                  stroke="#FF8C00" strokeWidth={activeZone === "multstudio" ? 2.5 : 1.5}/>
-                {/* Экран на стене (верхняя) */}
-                <rect x="175" y="86" width="130" height="50" rx="4" fill="#FF8C00" opacity="0.15" stroke="#FF8C00" strokeWidth="1.2"/>
-                <rect x="179" y="89" width="122" height="44" rx="3" fill="#FF8C00" opacity="0.18"/>
-                <text x="240" y="114" textAnchor="middle" fontSize="7" fill="#7A3800" opacity="0.8">экран</text>
+              {/* ══ ЗОНА B: МУЛЬТСТУДИЯ (верх, слева-центр) ══ */}
+              <g onClick={()=>setActiveZone("multstudio")} style={{cursor:"pointer"}}>
+                <rect x="200" y="63" width="170" height="157"
+                  fill={activeZone==="multstudio"?"#FFEDD5":"#FFF7ED"}
+                  stroke="#FF8C00" strokeWidth={activeZone==="multstudio"?2.5:1.5}/>
+                {/* Экран на верхней стене */}
+                <rect x="215" y="67" width="120" height="38" rx="3" fill="#FF8C00" opacity="0.15" stroke="#FF8C00" strokeWidth="1"/>
+                <rect x="219" y="70" width="112" height="32" rx="2" fill="#FF8C00" opacity="0.2"/>
+                <text x="275" y="90" textAnchor="middle" fontSize="7" fill="#7A3800">🖥 экран</text>
                 {/* Столы */}
-                <rect x="170" y="152" width="48" height="32" rx="3" fill="#FFD166" opacity="0.7" stroke="#FF8C00" strokeWidth="1"/>
-                <rect x="230" y="152" width="48" height="32" rx="3" fill="#FFD166" opacity="0.7" stroke="#FF8C00" strokeWidth="1"/>
-                <rect x="290" y="152" width="44" height="32" rx="3" fill="#FFD166" opacity="0.7" stroke="#FF8C00" strokeWidth="1"/>
-                {/* Стулья */}
-                {[178,194,238,254,297,312].map((x,i) => (
-                  <circle key={i} cx={x} cy="195" r="6" fill="#FF8C00" opacity="0.3"/>
+                <rect x="208" y="120" width="42" height="28" rx="3" fill="#FFD166" opacity="0.7" stroke="#FF8C00" strokeWidth="1"/>
+                <rect x="262" y="120" width="42" height="28" rx="3" fill="#FFD166" opacity="0.7" stroke="#FF8C00" strokeWidth="1"/>
+                <rect x="316" y="120" width="42" height="28" rx="3" fill="#FFD166" opacity="0.7" stroke="#FF8C00" strokeWidth="1"/>
+                {[215,230,269,284,323,338].map((x,i)=>(
+                  <circle key={i} cx={x} cy="158" r="6" fill="#FF8C00" opacity="0.3"/>
                 ))}
-                {/* Звукоизоляционные панели на левой стене зоны */}
-                {[88,108,128,148,168].map((y,i) => (
-                  <rect key={i} x="157" y={y} width="5" height="14" rx="2" fill="#FF8C00" opacity="0.5"/>
+                {/* Акустические панели (левая стена зоны) */}
+                {[70,88,106,124,142,160].map((y,i)=>(
+                  <rect key={i} x="200" y={y} width="4" height="12" rx="2" fill="#FF8C00" opacity="0.55"/>
                 ))}
-                {/* Метка */}
-                <text x="249" y="133" textAnchor="middle" fontSize="11" fontWeight="700" fill="#7A3800">🎬 Мультстудия</text>
-                <text x="249" y="146" textAnchor="middle" fontSize="8" fill="#FF6B00">~15 м²</text>
-                {activeZone === "multstudio" && (
-                  <rect x="157" y="82" width="185" height="190" fill="none" stroke="#FF8C00" strokeWidth="2.5" strokeDasharray="7 3" opacity="0.7"/>
+                <text x="285" y="107" textAnchor="middle" fontSize="10" fontWeight="700" fill="#7A3800">🎬 Мультстудия</text>
+                <text x="285" y="119" textAnchor="middle" fontSize="7.5" fill="#FF6B00">~14 м²</text>
+                {activeZone==="multstudio"&&(
+                  <rect x="200" y="63" width="170" height="157" fill="none" stroke="#FF8C00" strokeWidth="2.5" strokeDasharray="7 3" opacity="0.7"/>
                 )}
               </g>
 
-              {/* ══════════════════════════════════════════
-                  ЗОНА 4: ЗОНА СЕМЕЙНОГО ЧТЕНИЯ
-                  Центр-верх, угол
-              ══════════════════════════════════════════ */}
-              <g style={{ cursor: "default" }}>
-                <rect x="342" y="82" width="175" height="190" rx="0"
-                  fill="#FFF1F2" stroke="#F43F5E" strokeWidth="1.5"/>
-                {/* Диван/кресла */}
-                <rect x="358" y="200" width="110" height="30" rx="8" fill="#FDA4AF" opacity="0.6" stroke="#F43F5E" strokeWidth="1"/>
-                <rect x="358" y="170" width="30" height="62" rx="8" fill="#FDA4AF" opacity="0.5" stroke="#F43F5E" strokeWidth="1"/>
-                <rect x="440" y="170" width="30" height="62" rx="8" fill="#FDA4AF" opacity="0.5" stroke="#F43F5E" strokeWidth="1"/>
+              {/* ══ ЗОНА C: СЕМЕЙНОЕ ЧТЕНИЕ (верх, центр — угол) ══ */}
+              <g style={{cursor:"default"}}>
+                <rect x="370" y="63" width="160" height="157" fill="#FFF1F2" stroke="#F43F5E" strokeWidth="1.5"/>
+                {/* Диван П-образный */}
+                <rect x="385" y="163" width="100" height="22" rx="7" fill="#FDA4AF" opacity="0.65" stroke="#F43F5E" strokeWidth="1"/>
+                <rect x="385" y="130" width="22" height="55" rx="7" fill="#FDA4AF" opacity="0.6" stroke="#F43F5E" strokeWidth="1"/>
+                <rect x="463" y="130" width="22" height="55" rx="7" fill="#FDA4AF" opacity="0.6" stroke="#F43F5E" strokeWidth="1"/>
                 {/* Торшер */}
-                <circle cx="494" cy="105" r="7" fill="#FCA5A5" opacity="0.5"/>
-                <line x1="494" y1="112" x2="494" y2="130" stroke="#F43F5E" strokeWidth="1.5"/>
-                <rect x="490" y="130" width="8" height="5" rx="1" fill="#F43F5E" opacity="0.5"/>
+                <circle cx="508" cy="82" r="6" fill="#FCA5A5" opacity="0.5"/>
+                <line x1="508" y1="88" x2="508" y2="100" stroke="#F43F5E" strokeWidth="1.5"/>
+                <rect x="504" y="100" width="8" height="4" rx="1" fill="#F43F5E" opacity="0.5"/>
                 {/* Ковёр */}
-                <ellipse cx="413" cy="215" rx="55" ry="25" fill="none" stroke="#F43F5E" strokeWidth="1" strokeDasharray="5 3" opacity="0.5"/>
-                {/* Метка */}
-                <text x="429" y="108" textAnchor="middle" fontSize="10" fontWeight="700" fill="#9F1239">🏠 Семейное</text>
-                <text x="429" y="121" textAnchor="middle" fontSize="10" fontWeight="700" fill="#9F1239">чтение</text>
-                <text x="429" y="135" textAnchor="middle" fontSize="7.5" fill="#E11D48">~14 м²</text>
+                <ellipse cx="437" cy="163" rx="40" ry="20" fill="none" stroke="#F43F5E" strokeWidth="1" strokeDasharray="4 3" opacity="0.5"/>
+                <text x="450" y="92" textAnchor="middle" fontSize="9.5" fontWeight="700" fill="#9F1239">🏠 Семейное</text>
+                <text x="450" y="105" textAnchor="middle" fontSize="9.5" fontWeight="700" fill="#9F1239">чтение</text>
+                <text x="450" y="118" textAnchor="middle" fontSize="7.5" fill="#E11D48">~12 м²</text>
               </g>
 
-              {/* ══════════════════════════════════════════
-                  ЗОНА 5: ИГРОТЕКА
-                  Правый верхний угол
-              ══════════════════════════════════════════ */}
-              <g onClick={() => setActiveZone("gameroom")} style={{ cursor: "pointer" }}>
-                <rect x="517" y="82" width="372" height="190" rx="0"
-                  fill={activeZone === "gameroom" ? "#DCFCE7" : "#F0FDF4"}
-                  stroke="#2E8B57" strokeWidth={activeZone === "gameroom" ? 2.5 : 1.5}/>
+              {/* ══ ЗОНА D: ИГРОТЕКА (правый верхний угол) ══ */}
+              <g onClick={()=>setActiveZone("gameroom")} style={{cursor:"pointer"}}>
+                <rect x="530" y="63" width="347" height="157"
+                  fill={activeZone==="gameroom"?"#DCFCE7":"#F0FDF4"}
+                  stroke="#2E8B57" strokeWidth={activeZone==="gameroom"?2.5:1.5}/>
                 {/* Стеллажи с играми у правой стены */}
-                <rect x="878" y="86" width="9" height="180" rx="2" fill="#2E8B57" opacity="0.35"/>
-                {[95,118,141,164,187,210,233].map((y,i) => (
-                  <rect key={i} x="869" y={y} width="19" height="8" rx="1" fill="#86EFAC" opacity="0.7"/>
+                <rect x="867" y="67" width="10" height="149" rx="2" fill="#2E8B57" opacity="0.3"/>
+                {[72,90,108,126,144,162,180].map((y,i)=>(
+                  <rect key={i} x="857" y={y} width="20" height="10" rx="1" fill="#86EFAC" opacity="0.7"/>
                 ))}
-                {/* Игровые столы */}
-                <rect x="535" y="120" width="58" height="40" rx="4" fill="#86EFAC" opacity="0.6" stroke="#2E8B57" strokeWidth="1"/>
-                <rect x="615" y="120" width="58" height="40" rx="4" fill="#86EFAC" opacity="0.6" stroke="#2E8B57" strokeWidth="1"/>
-                <rect x="695" y="120" width="58" height="40" rx="4" fill="#86EFAC" opacity="0.6" stroke="#2E8B57" strokeWidth="1"/>
-                {/* Стулья */}
-                {[544,563,624,643,704,723].map((x,i) => (
-                  <circle key={i} cx={x} cy="172" r="7" fill="#2E8B57" opacity="0.25"/>
+                {/* Маркерная верхняя стена */}
+                <rect x="530" y="63" width="347" height="6" fill="#2E8B57" opacity="0.35"/>
+                <text x="703" y="77" textAnchor="middle" fontSize="7" fill="#166534">маркерная стена</text>
+                {/* Столы игровые */}
+                {[0,1,2].map(col=>(
+                  <g key={col}>
+                    <rect x={545+col*95} y="100" width="70" height="40" rx="4" fill="#86EFAC" opacity="0.55" stroke="#2E8B57" strokeWidth="1"/>
+                    {[553+col*95, 570+col*95, 587+col*95, 604+col*95].map((x,j)=>(
+                      <circle key={j} cx={x} cy="151" r="7" fill="#2E8B57" opacity="0.22"/>
+                    ))}
+                    {[553+col*95, 570+col*95, 587+col*95, 604+col*95].map((x,j)=>(
+                      <circle key={j} cx={x} cy="89" r="7" fill="#2E8B57" opacity="0.22"/>
+                    ))}
+                  </g>
                 ))}
-                {[544,563,624,643,704,723].map((x,i) => (
-                  <circle key={i} cx={x} cy="108" r="7" fill="#2E8B57" opacity="0.25"/>
-                ))}
-                {/* Маркерная стена (верх) */}
-                <rect x="517" y="82" width="372" height="7" rx="0" fill="#2E8B57" opacity="0.3"/>
-                <text x="703" y="95" textAnchor="middle" fontSize="7" fill="#166534">маркерная стена</text>
-                {/* Метка */}
-                <text x="680" y="108" textAnchor="middle" fontSize="11" fontWeight="700" fill="#14532D">🎮 Игротека</text>
-                <text x="703" y="188" textAnchor="middle" fontSize="7.5" fill="#166534">~25 м²</text>
-                {activeZone === "gameroom" && (
-                  <rect x="517" y="82" width="372" height="190" fill="none" stroke="#2E8B57" strokeWidth="2.5" strokeDasharray="7 3" opacity="0.7"/>
+                <text x="700" y="170" textAnchor="middle" fontSize="11" fontWeight="700" fill="#14532D">🎮 Игротека</text>
+                <text x="700" y="183" textAnchor="middle" fontSize="7.5" fill="#166534">~25 м²</text>
+                {activeZone==="gameroom"&&(
+                  <rect x="530" y="63" width="347" height="157" fill="none" stroke="#2E8B57" strokeWidth="2.5" strokeDasharray="7 3" opacity="0.7"/>
                 )}
               </g>
 
-              {/* ══════════════════════════════════════════
-                  ЗОНА 6: ЧИТАЛЬНЫЙ ЗАЛ + МЕРОПРИЯТИЯ
-                  Центр помещения (большая зона)
-              ══════════════════════════════════════════ */}
-              <g style={{ cursor: "default" }}>
-                <rect x="157" y="272" width="535" height="180" rx="0"
-                  fill="#F8FAFC" stroke="#64748B" strokeWidth="1.5" strokeDasharray="6 3"/>
-                {/* Столы читального зала — 3 ряда */}
-                {[0,1,2].map(row => (
-                  [0,1,2,3].map(col => (
-                    <g key={`t${row}${col}`}>
-                      <rect x={175 + col*120} y={285 + row*48} width="80" height="28" rx="3"
-                        fill="#CBD5E1" opacity="0.6" stroke="#64748B" strokeWidth="0.8"/>
-                      <circle cx={185 + col*120} cy={322 + row*48} r="7" fill="#94A3B8" opacity="0.4"/>
-                      <circle cx={205 + col*120} cy={322 + row*48} r="7" fill="#94A3B8" opacity="0.4"/>
-                      <circle cx={225 + col*120} cy={322 + row*48} r="7" fill="#94A3B8" opacity="0.4"/>
-                      <circle cx={245 + col*120} cy={322 + row*48} r="7" fill="#94A3B8" opacity="0.4"/>
+              {/* ══ ЗОНА H: РАБОЧЕЕ МЕСТО БИБЛИОТЕКАРЯ (левый нижний — справа от входа) ══ */}
+              <g style={{cursor:"default"}}>
+                <rect x="83" y="220" width="117" height="197" fill="#EFF6FF" stroke="#2563EB" strokeWidth="1.5"/>
+                {/* Г-образный стол */}
+                <rect x="93" y="250" width="60" height="28" rx="3" fill="#BFDBFE" stroke="#2563EB" strokeWidth="1"/>
+                <rect x="113" y="232" width="28" height="48" rx="3" fill="#BFDBFE" stroke="#2563EB" strokeWidth="1"/>
+                {/* Монитор */}
+                <rect x="120" y="235" width="16" height="11" rx="1" fill="#2563EB" opacity="0.55"/>
+                <rect x="126" y="246" width="4" height="3" rx="0" fill="#2563EB" opacity="0.3"/>
+                {/* Кресло */}
+                <circle cx="110" cy="292" r="10" fill="#93C5FD" opacity="0.55" stroke="#2563EB" strokeWidth="0.8"/>
+                {/* Стойка выдачи книг */}
+                <rect x="90" y="320" width="100" height="18" rx="4" fill="#BFDBFE" stroke="#2563EB" strokeWidth="1"/>
+                <text x="140" y="332" textAnchor="middle" fontSize="7" fill="#1E40AF">стойка выдачи</text>
+                <text x="141" y="378" textAnchor="middle" fontSize="8.5" fontWeight="700" fill="#1E3A8A">🖥 Библиотекарь</text>
+                <text x="141" y="390" textAnchor="middle" fontSize="7" fill="#2563EB">рабочее место</text>
+              </g>
+
+              {/* ══ ЗОНА E: ЧИТАЛЬНЫЙ ЗАЛ + МЕРОПРИЯТИЯ (центр) ══ */}
+              <g style={{cursor:"default"}}>
+                <rect x="200" y="220" width="500" height="197" fill="#F8FAFC" stroke="#64748B" strokeWidth="1.5" strokeDasharray="7 3"/>
+                {/* Сцена / экран для мероприятий — левая стена зоны */}
+                <rect x="204" y="228" width="10" height="90" rx="3" fill="#475569" opacity="0.25" stroke="#64748B" strokeWidth="1"/>
+                <text x="214" y="278" textAnchor="start" fontSize="7" fill="#475569" transform="rotate(-90,214,278)">сцена</text>
+                {/* Столы — 4 ряда × 3 стола */}
+                {[0,1,2,3].map(row=>(
+                  [0,1,2].map(col=>(
+                    <g key={`r${row}c${col}`}>
+                      <rect x={230+col*150} y={235+row*44} width="110" height="26" rx="3"
+                        fill="#CBD5E1" opacity="0.55" stroke="#94A3B8" strokeWidth="0.8"/>
+                      {[0,1,2,3,4].map(s=>(
+                        <circle key={s} cx={238+col*150+s*20} cy={270+row*44} r="6" fill="#94A3B8" opacity="0.35"/>
+                      ))}
                     </g>
                   ))
                 ))}
-                {/* Сцена/экран для мероприятий */}
-                <rect x="170" y="278" width="95" height="18" rx="3" fill="#64748B" opacity="0.2" stroke="#64748B" strokeWidth="1"/>
-                <text x="217" y="291" textAnchor="middle" fontSize="6.5" fill="#475569">сцена / экран</text>
-                {/* Метка */}
-                <text x="420" y="422" textAnchor="middle" fontSize="11" fontWeight="700" fill="#334155">📖 Читальный зал и мероприятия</text>
-                <text x="420" y="436" textAnchor="middle" fontSize="7.5" fill="#64748B">~38 м²</text>
+                <text x="450" y="408" textAnchor="middle" fontSize="10.5" fontWeight="700" fill="#334155">📖 Читальный зал и мероприятия</text>
+                <text x="450" y="420" textAnchor="middle" fontSize="7.5" fill="#64748B">~40 м²</text>
               </g>
 
-              {/* ══════════════════════════════════════════
-                  ЗОНА 7: СЕНСОРНАЯ КОМНАТА
-                  Правая сторона от входа (правый нижний блок)
-              ══════════════════════════════════════════ */}
-              <g onClick={() => setActiveZone("sensory")} style={{ cursor: "pointer" }}>
-                <rect x="692" y="272" width="197" height="110" rx="0"
-                  fill={activeZone === "sensory" ? "#EDE9FE" : "#F5F3FF"}
-                  stroke="#7B2FBE" strokeWidth={activeZone === "sensory" ? 2.5 : 1.5}/>
+              {/* ══ ЗОНА F: СЕНСОРНАЯ КОМНАТА (правая сторона, верх) ══ */}
+              <g onClick={()=>setActiveZone("sensory")} style={{cursor:"pointer"}}>
+                <rect x="700" y="220" width="177" height="130"
+                  fill={activeZone==="sensory"?"#EDE9FE":"#F5F3FF"}
+                  stroke="#7B2FBE" strokeWidth={activeZone==="sensory"?2.5:1.5}/>
                 {/* Пузырьковые колонны */}
-                <rect x="702" y="280" width="14" height="70" rx="7" fill="#7B2FBE" opacity="0.18" stroke="#7B2FBE" strokeWidth="1"/>
-                <rect x="722" y="280" width="14" height="70" rx="7" fill="#C4A8E8" opacity="0.25" stroke="#7B2FBE" strokeWidth="1"/>
+                <rect x="712" y="230" width="13" height="80" rx="6" fill="#7B2FBE" opacity="0.18" stroke="#7B2FBE" strokeWidth="1"/>
+                <rect x="730" y="230" width="13" height="80" rx="6" fill="#C4A8E8" opacity="0.25" stroke="#7B2FBE" strokeWidth="1"/>
                 {/* Пуфы */}
-                <circle cx="790" cy="315" r="18" fill="#C4A8E8" opacity="0.35" stroke="#7B2FBE" strokeWidth="1"/>
-                <circle cx="815" cy="325" r="13" fill="#7B2FBE" opacity="0.2"/>
-                <circle cx="770" cy="328" r="11" fill="#C4A8E8" opacity="0.4"/>
-                {/* Звёзды потолок */}
-                {[[750,276],[770,279],[790,275],[830,278],[855,276],[870,280]].map(([x,y],i) => (
-                  <circle key={i} cx={x} cy={y} r="1.5" fill="#7B2FBE" opacity="0.6"/>
+                <circle cx="800" cy="278" rx="0" r="19" fill="#C4A8E8" opacity="0.4" stroke="#7B2FBE" strokeWidth="1"/>
+                <circle cx="830" cy="285" r="13" fill="#7B2FBE" opacity="0.2"/>
+                <circle cx="775" cy="290" r="12" fill="#C4A8E8" opacity="0.4"/>
+                {/* Звёзды */}
+                {[[755,224],[770,227],[790,223],[820,226],[845,224],[860,228]].map(([x,y],i)=>(
+                  <circle key={i} cx={x} cy={y} r="1.5" fill="#7B2FBE" opacity="0.7"/>
                 ))}
-                {/* Окна (правая стена) */}
-                <text x="790" y="359" textAnchor="middle" fontSize="9" fontWeight="700" fill="#4C1D95">✨ Сенсорная</text>
-                <text x="790" y="371" textAnchor="middle" fontSize="7.5" fill="#5A1B9A">~8 м²</text>
-                {activeZone === "sensory" && (
-                  <rect x="692" y="272" width="197" height="110" fill="none" stroke="#7B2FBE" strokeWidth="2.5" strokeDasharray="7 3" opacity="0.7"/>
+                <text x="789" y="320" textAnchor="middle" fontSize="9.5" fontWeight="700" fill="#4C1D95">✨ Сенсорная</text>
+                <text x="789" y="333" textAnchor="middle" fontSize="7.5" fill="#5A1B9A">~8 м²</text>
+                {activeZone==="sensory"&&(
+                  <rect x="700" y="220" width="177" height="130" fill="none" stroke="#7B2FBE" strokeWidth="2.5" strokeDasharray="7 3" opacity="0.7"/>
                 )}
               </g>
 
-              {/* ══════════════════════════════════════════
-                  ЗОНА 8: ЗАЛ ЧИТАЛКИН
-                  Правая нижняя часть
-              ══════════════════════════════════════════ */}
-              <g style={{ cursor: "default" }}>
-                <rect x="692" y="382" width="197" height="70" rx="0"
-                  fill="#FFF7ED" stroke="#EA580C" strokeWidth="1.5"/>
-                {/* Мягкие пуфы-подушки */}
-                <circle cx="720" cy="415" r="12" fill="#FED7AA" opacity="0.7" stroke="#EA580C" strokeWidth="1"/>
-                <circle cx="752" cy="415" r="12" fill="#FED7AA" opacity="0.7" stroke="#EA580C" strokeWidth="1"/>
-                <circle cx="784" cy="415" r="12" fill="#FED7AA" opacity="0.7" stroke="#EA580C" strokeWidth="1"/>
-                <circle cx="816" cy="415" r="12" fill="#FED7AA" opacity="0.7" stroke="#EA580C" strokeWidth="1"/>
-                <circle cx="848" cy="415" r="12" fill="#FED7AA" opacity="0.7" stroke="#EA580C" strokeWidth="1"/>
+              {/* ══ ЗОНА G: ЗАЛ ЧИТАЛКИН (правая сторона, низ) ══ */}
+              <g style={{cursor:"default"}}>
+                <rect x="700" y="350" width="177" height="67" fill="#FFF7ED" stroke="#EA580C" strokeWidth="1.5"/>
+                {/* Пуфы-подушки */}
+                {[720,748,776,804,832,860].map((x,i)=>(
+                  <circle key={i} cx={x} cy="378" r="12" fill="#FED7AA" opacity="0.75" stroke="#EA580C" strokeWidth="0.8"/>
+                ))}
                 {/* Низкий столик */}
-                <rect x="710" y="432" width="160" height="12" rx="4" fill="#FDBA74" opacity="0.5" stroke="#EA580C" strokeWidth="0.8"/>
-                <text x="790" y="445" textAnchor="middle" fontSize="8" fontWeight="700" fill="#9A3412">📕 Зал «Читалкин»</text>
+                <rect x="715" y="394" width="150" height="10" rx="3" fill="#FDBA74" opacity="0.6" stroke="#EA580C" strokeWidth="0.8"/>
+                <text x="789" y="408" textAnchor="middle" fontSize="8.5" fontWeight="700" fill="#9A3412">📕 Зал «Читалкин»</text>
               </g>
 
-              {/* ── Размерные линии ── */}
-              {/* Ширина (16м) */}
-              <line x1="60" y1="465" x2="892" y2="465" stroke="#9CA3AF" strokeWidth="1"/>
-              <line x1="60" y1="461" x2="60" y2="469" stroke="#9CA3AF" strokeWidth="1"/>
-              <line x1="892" y1="461" x2="892" y2="469" stroke="#9CA3AF" strokeWidth="1"/>
-              <text x="476" y="477" textAnchor="middle" fontSize="9" fill="#6B7280">16 м</text>
-              {/* Высота (7.2м) */}
-              <line x1="44" y1="80" x2="44" y2="454" stroke="#9CA3AF" strokeWidth="1"/>
-              <line x1="40" y1="80" x2="48" y2="80" stroke="#9CA3AF" strokeWidth="1"/>
-              <line x1="40" y1="454" x2="48" y2="454" stroke="#9CA3AF" strokeWidth="1"/>
-              <text x="34" y="270" textAnchor="middle" fontSize="9" fill="#6B7280" transform="rotate(-90,34,270)">7,2 м</text>
-              {/* Метка площади */}
-              <text x="476" y="500" textAnchor="middle" fontSize="10" fontWeight="600" fill="#374151">Общая площадь: 115,2 м²</text>
+              {/* ══ РАЗМЕРНЫЕ ЛИНИИ ══ */}
+              <line x1="80" y1="435" x2="880" y2="435" stroke="#9CA3AF" strokeWidth="1"/>
+              <line x1="80" y1="431" x2="80" y2="439" stroke="#9CA3AF" strokeWidth="1"/>
+              <line x1="880" y1="431" x2="880" y2="439" stroke="#9CA3AF" strokeWidth="1"/>
+              <text x="480" y="448" textAnchor="middle" fontSize="9" fill="#6B7280">16 м</text>
 
-              {/* ── Компас / север ── */}
-              <text x="920" y="68" textAnchor="middle" fontSize="9" fill="#9CA3AF">С</text>
-              <line x1="920" y1="72" x2="920" y2="88" stroke="#9CA3AF" strokeWidth="1"/>
-              <polygon points="920,72 916,82 920,80 924,82" fill="#9CA3AF"/>
+              <line x1="48" y1="60" x2="48" y2="420" stroke="#9CA3AF" strokeWidth="1"/>
+              <line x1="44" y1="60" x2="52" y2="60" stroke="#9CA3AF" strokeWidth="1"/>
+              <line x1="44" y1="420" x2="52" y2="420" stroke="#9CA3AF" strokeWidth="1"/>
+              <text x="36" y="243" textAnchor="middle" fontSize="9" fill="#6B7280" transform="rotate(-90,36,243)">7,2 м</text>
+
+              <text x="480" y="472" textAnchor="middle" fontSize="10" fontWeight="600" fill="#374151">Общая площадь: 115,2 м²</text>
+
+              {/* Стрелка «окна — правая стена от входа» */}
+              <text x="697" y="452" textAnchor="middle" fontSize="8" fill="#0284C7">☀ 6 окон — правая стена от входа</text>
             </svg>
           </div>
 
