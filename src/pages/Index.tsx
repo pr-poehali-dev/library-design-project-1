@@ -112,6 +112,13 @@ const FLOOR_OUTLET_TYPES = [
   { label: "220В+USB", color: "#7C3AED" },
 ];
 
+type FloorLight = { id: string; x: number; y: number; type: number };
+const FLOOR_LIGHT_TYPES = [
+  { label: "Встроенный", color: "#F59E0B", r: 9, beams: 8 },
+  { label: "Трековый", color: "#0EA5E9", r: 7, beams: 0 },
+  { label: "Люстра", color: "#A855F7", r: 13, beams: 12 },
+];
+
 export default function Index() {
   const [activeZone, setActiveZone] = useState<string>("multstudio");
   const zone = zones.find((z) => z.id === activeZone)!;
@@ -166,7 +173,68 @@ export default function Index() {
     ));
   }, [draggingOutlet, dragOff, getFloorCoords]);
 
-  const handleFloorMouseUp = useCallback(() => setDraggingOutlet(null), []);;
+  const handleFloorMouseUp = useCallback(() => {
+    setDraggingOutlet(null);
+    setDraggingLight(null);
+  }, []);
+
+  // Floor plan light state
+  const [floorLights, setFloorLights] = useState<FloorLight[]>([]);
+  const [lightMode, setLightMode] = useState(false);
+  const [lightType, setLightType] = useState(0);
+  const [draggingLight, setDraggingLight] = useState<string | null>(null);
+  const [dragLightOff, setDragLightOff] = useState({ x: 0, y: 0 });
+  const [selectedLight, setSelectedLight] = useState<string | null>(null);
+
+  const handleFloorClickCombined = useCallback((e: React.MouseEvent) => {
+    const target = e.target as SVGElement;
+    if (target.closest("[data-floor-outlet]") || target.closest("[data-floor-light]")) return;
+    if (draggingOutlet || draggingLight) return;
+    const { x, y } = getFloorCoords(e);
+    if (x < 80 || x > 880 || y < 60 || y > 420) return;
+
+    if (outletMode) {
+      const id = `fo-${Date.now()}`;
+      setFloorOutlets(prev => [...prev, { id, x, y, type: outletType }]);
+      setSelectedOutlet(id);
+      setSelectedLight(null);
+    } else if (lightMode) {
+      const id = `fl-${Date.now()}`;
+      setFloorLights(prev => [...prev, { id, x, y, type: lightType }]);
+      setSelectedLight(id);
+      setSelectedOutlet(null);
+    }
+  }, [outletMode, lightMode, draggingOutlet, draggingLight, outletType, lightType, getFloorCoords]);
+
+  const handleLightDragStart = useCallback((e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    const { x, y } = getFloorCoords(e);
+    const l = floorLights.find(l => l.id === id);
+    if (!l) return;
+    setDraggingLight(id);
+    setSelectedLight(id);
+    setSelectedOutlet(null);
+    setDragLightOff({ x: x - l.x, y: y - l.y });
+  }, [floorLights, getFloorCoords]);
+
+  const handleFloorMouseMoveCombined = useCallback((e: React.MouseEvent) => {
+    if (draggingOutlet) {
+      const { x, y } = getFloorCoords(e);
+      setFloorOutlets(prev => prev.map(o =>
+        o.id === draggingOutlet
+          ? { ...o, x: Math.max(85, Math.min(875, x - dragOff.x)), y: Math.max(65, Math.min(415, y - dragOff.y)) }
+          : o
+      ));
+    }
+    if (draggingLight) {
+      const { x, y } = getFloorCoords(e);
+      setFloorLights(prev => prev.map(l =>
+        l.id === draggingLight
+          ? { ...l, x: Math.max(85, Math.min(875, x - dragLightOff.x)), y: Math.max(65, Math.min(415, y - dragLightOff.y)) }
+          : l
+      ));
+    }
+  }, [draggingOutlet, draggingLight, dragOff, dragLightOff, getFloorCoords]);
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
@@ -335,38 +403,55 @@ export default function Index() {
           </h4>
           <p className="text-xs text-gray-400 mb-3">Нажмите на зону, чтобы посмотреть детали</p>
 
-          {/* Outlet toolbar */}
+          {/* Toolbar */}
           <div className="flex flex-wrap items-center gap-2 mb-4 p-3 rounded-2xl bg-gray-50 border border-gray-200">
+            {/* Розетки */}
             <button
-              onClick={() => { setOutletMode(m => !m); setSelectedOutlet(null); }}
+              onClick={() => { setOutletMode(m => { if (!m) setLightMode(false); return !m; }); setSelectedOutlet(null); }}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium transition-all ${outletMode ? "bg-gray-900 text-white" : "bg-white text-gray-700 border border-gray-200 hover:border-gray-400"}`}
             >
               <Icon name="PlugZap" size={14} />
-              {outletMode ? "Режим: Розетки ВКЛ" : "Добавить розетки"}
+              Розетки
             </button>
-            {outletMode && (
-              <>
-                {FLOOR_OUTLET_TYPES.map((t, i) => (
-                  <button
-                    key={t.label}
-                    onClick={() => setOutletType(i)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition-all"
-                    style={outletType === i
-                      ? { backgroundColor: t.color, color: "white", borderColor: t.color }
-                      : { backgroundColor: "white", color: "#374151", borderColor: "#D1D5DB" }
-                    }
-                  >
-                    <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: outletType === i ? "white" : t.color }} />
-                    {t.label}
-                  </button>
-                ))}
-                <span className="text-xs text-gray-400 ml-1">Кликните на план · перетащите</span>
-              </>
+            {outletMode && FLOOR_OUTLET_TYPES.map((t, i) => (
+              <button key={t.label} onClick={() => setOutletType(i)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition-all"
+                style={outletType === i ? { backgroundColor: t.color, color: "white", borderColor: t.color } : { backgroundColor: "white", color: "#374151", borderColor: "#D1D5DB" }}
+              >
+                <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: outletType === i ? "white" : t.color }} />
+                {t.label}
+              </button>
+            ))}
+
+            <div className="w-px h-6 bg-gray-300 mx-1" />
+
+            {/* Светильники */}
+            <button
+              onClick={() => { setLightMode(m => { if (!m) setOutletMode(false); return !m; }); setSelectedLight(null); }}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium transition-all ${lightMode ? "bg-yellow-500 text-white" : "bg-white text-gray-700 border border-gray-200 hover:border-gray-400"}`}
+            >
+              <Icon name="Sun" size={14} />
+              Светильники
+            </button>
+            {lightMode && FLOOR_LIGHT_TYPES.map((t, i) => (
+              <button key={t.label} onClick={() => setLightType(i)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition-all"
+                style={lightType === i ? { backgroundColor: t.color, color: "white", borderColor: t.color } : { backgroundColor: "white", color: "#374151", borderColor: "#D1D5DB" }}
+              >
+                <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: lightType === i ? "white" : t.color }} />
+                {t.label}
+              </button>
+            ))}
+
+            {(outletMode || lightMode) && (
+              <span className="text-xs text-gray-400 ml-1">Кликните на план · перетащите</span>
             )}
-            {floorOutlets.length > 0 && (
-              <div className="ml-auto flex items-center gap-2">
-                <span className="text-xs text-gray-500 font-medium">{floorOutlets.length} розеток</span>
-                <button onClick={() => { setFloorOutlets([]); setSelectedOutlet(null); }} className="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded-lg hover:bg-red-50">Очистить</button>
+
+            {(floorOutlets.length > 0 || floorLights.length > 0) && (
+              <div className="ml-auto flex items-center gap-3">
+                {floorOutlets.length > 0 && <span className="text-xs text-gray-500">{floorOutlets.length} розеток</span>}
+                {floorLights.length > 0 && <span className="text-xs text-gray-500">{floorLights.length} светильников</span>}
+                <button onClick={() => { setFloorOutlets([]); setFloorLights([]); setSelectedOutlet(null); setSelectedLight(null); }} className="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded-lg hover:bg-red-50">Очистить всё</button>
               </div>
             )}
           </div>
@@ -376,9 +461,9 @@ export default function Index() {
               ref={floorSvgRef}
               viewBox="0 0 960 480"
               className="w-full max-w-4xl mx-auto"
-              style={{ minWidth: 380, cursor: outletMode ? (draggingOutlet ? "grabbing" : "crosshair") : "default" }}
-              onClick={handleFloorClick}
-              onMouseMove={handleFloorMouseMove}
+              style={{ minWidth: 380, cursor: (outletMode || lightMode) ? (draggingOutlet || draggingLight ? "grabbing" : "crosshair") : "default" }}
+              onClick={handleFloorClickCombined}
+              onMouseMove={handleFloorMouseMoveCombined}
               onMouseUp={handleFloorMouseUp}
               onMouseLeave={handleFloorMouseUp}
             >
@@ -656,7 +741,7 @@ export default function Index() {
                     transform={`translate(${o.x},${o.y})`}
                     style={{ cursor: draggingOutlet === o.id ? "grabbing" : "grab" }}
                     onMouseDown={(e) => handleOutletDragStart(e, o.id)}
-                    onClick={(e) => { e.stopPropagation(); setSelectedOutlet(o.id); }}
+                    onClick={(e) => { e.stopPropagation(); setSelectedOutlet(o.id); setSelectedLight(null); }}
                   >
                     {isSel && <circle r="14" fill={t.color} opacity="0.18"/>}
                     <circle r="9" fill={t.color}/>
@@ -666,10 +751,7 @@ export default function Index() {
                     <rect x="-13" y="11" width="26" height="10" rx="3" fill={t.color} opacity="0.92"/>
                     <text y="19" textAnchor="middle" fontSize="6" fill="white" fontWeight="700">{t.label}</text>
                     {isSel && (
-                      <g
-                        onClick={(e) => { e.stopPropagation(); setFloorOutlets(prev => prev.filter(x => x.id !== o.id)); setSelectedOutlet(null); }}
-                        style={{ cursor: "pointer" }}
-                      >
+                      <g onClick={(e) => { e.stopPropagation(); setFloorOutlets(prev => prev.filter(x => x.id !== o.id)); setSelectedOutlet(null); }} style={{ cursor: "pointer" }}>
                         <circle cx="10" cy="-10" r="6" fill="#EF4444"/>
                         <line x1="8" y1="-12" x2="12" y2="-8" stroke="white" strokeWidth="1.5"/>
                         <line x1="12" y1="-12" x2="8" y2="-8" stroke="white" strokeWidth="1.5"/>
@@ -678,23 +760,105 @@ export default function Index() {
                   </g>
                 );
               })}
+
+              {/* ══ СВЕТИЛЬНИКИ НА ПЛАНЕ ══ */}
+              {floorLights.map((l) => {
+                const t = FLOOR_LIGHT_TYPES[l.type];
+                const isSel = selectedLight === l.id;
+                const beamAngles = Array.from({ length: t.beams }, (_, i) => (360 / t.beams) * i);
+                return (
+                  <g
+                    key={l.id}
+                    data-floor-light="true"
+                    transform={`translate(${l.x},${l.y})`}
+                    style={{ cursor: draggingLight === l.id ? "grabbing" : "grab" }}
+                    onMouseDown={(e) => handleLightDragStart(e, l.id)}
+                    onClick={(e) => { e.stopPropagation(); setSelectedLight(l.id); setSelectedOutlet(null); }}
+                  >
+                    {/* Ореол света */}
+                    <circle r={t.r + 10} fill={t.color} opacity="0.10"/>
+                    <circle r={t.r + 6} fill={t.color} opacity="0.12"/>
+                    {/* Лучи */}
+                    {beamAngles.map((angle, i) => {
+                      const rad = (angle * Math.PI) / 180;
+                      const x1 = Math.cos(rad) * (t.r + 1);
+                      const y1 = Math.sin(rad) * (t.r + 1);
+                      const x2 = Math.cos(rad) * (t.r + 8);
+                      const y2 = Math.sin(rad) * (t.r + 8);
+                      return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke={t.color} strokeWidth="1.2" opacity="0.7"/>;
+                    })}
+                    {/* Корпус */}
+                    {l.type === 1 ? (
+                      // Трековый — прямоугольный
+                      <>
+                        <rect x={-t.r} y={-t.r + 2} width={t.r * 2} height={t.r * 2 - 4} rx="3" fill={t.color}/>
+                        <rect x={-t.r + 2} y={-t.r + 4} width={t.r * 2 - 4} height={t.r * 2 - 8} rx="2" fill="white" opacity="0.35"/>
+                        <line x1={0} y1={-t.r + 2} x2={0} y2={-t.r - 4} stroke={t.color} strokeWidth="2"/>
+                      </>
+                    ) : (
+                      // Встроенный / Люстра — круглый
+                      <>
+                        <circle r={t.r} fill={t.color}/>
+                        <circle r={t.r - 3} fill="white" opacity="0.3"/>
+                        <circle r={t.r - 5} fill="white" opacity="0.5"/>
+                        {l.type === 2 && (
+                          // Подвес люстры
+                          <line x1="0" y1={-t.r} x2="0" y2={-t.r - 8} stroke={t.color} strokeWidth="2"/>
+                        )}
+                      </>
+                    )}
+                    {/* Выделение */}
+                    {isSel && <circle r={t.r + 2} fill="none" stroke={t.color} strokeWidth="2" strokeDasharray="4 2"/>}
+                    {/* Подпись */}
+                    <rect x="-16" y={t.r + 3} width="32" height="10" rx="3" fill={t.color} opacity="0.9"/>
+                    <text y={t.r + 11} textAnchor="middle" fontSize="6" fill="white" fontWeight="700">{t.label}</text>
+                    {/* Удаление */}
+                    {isSel && (
+                      <g onClick={(e) => { e.stopPropagation(); setFloorLights(prev => prev.filter(x => x.id !== l.id)); setSelectedLight(null); }} style={{ cursor: "pointer" }}>
+                        <circle cx={t.r + 2} cy={-t.r - 2} r="6" fill="#EF4444"/>
+                        <line x1={t.r} y1={-t.r - 4} x2={t.r + 4} y2={-t.r} stroke="white" strokeWidth="1.5"/>
+                        <line x1={t.r + 4} y1={-t.r - 4} x2={t.r} y2={-t.r} stroke="white" strokeWidth="1.5"/>
+                      </g>
+                    )}
+                  </g>
+                );
+              })}
             </svg>
           </div>
 
-          {/* Легенда розеток */}
-          {floorOutlets.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-3 items-center p-3 rounded-xl bg-gray-50 border border-gray-100">
-              <span className="text-xs font-semibold text-gray-600 flex items-center gap-1"><Icon name="PlugZap" size={12}/>Розетки на плане:</span>
-              {FLOOR_OUTLET_TYPES.map((t, i) => {
-                const count = floorOutlets.filter(o => o.type === i).length;
-                if (!count) return null;
-                return (
-                  <span key={t.label} className="flex items-center gap-1.5 text-xs text-gray-700">
-                    <span className="w-3 h-3 rounded-full inline-block" style={{ backgroundColor: t.color }}/>
-                    {t.label}: <b>{count} шт.</b>
-                  </span>
-                );
-              })}
+          {/* Легенда розеток и светильников */}
+          {(floorOutlets.length > 0 || floorLights.length > 0) && (
+            <div className="mt-4 flex flex-wrap gap-4 items-center p-3 rounded-xl bg-gray-50 border border-gray-100">
+              {floorOutlets.length > 0 && (
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs font-semibold text-gray-600 flex items-center gap-1"><Icon name="PlugZap" size={12}/>Розетки:</span>
+                  {FLOOR_OUTLET_TYPES.map((t, i) => {
+                    const count = floorOutlets.filter(o => o.type === i).length;
+                    if (!count) return null;
+                    return (
+                      <span key={t.label} className="flex items-center gap-1.5 text-xs text-gray-700">
+                        <span className="w-3 h-3 rounded-full inline-block" style={{ backgroundColor: t.color }}/>
+                        {t.label}: <b>{count} шт.</b>
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
+              {floorLights.length > 0 && (
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs font-semibold text-gray-600 flex items-center gap-1"><Icon name="Sun" size={12}/>Светильники:</span>
+                  {FLOOR_LIGHT_TYPES.map((t, i) => {
+                    const count = floorLights.filter(l => l.type === i).length;
+                    if (!count) return null;
+                    return (
+                      <span key={t.label} className="flex items-center gap-1.5 text-xs text-gray-700">
+                        <span className="w-3 h-3 rounded-full inline-block" style={{ backgroundColor: t.color }}/>
+                        {t.label}: <b>{count} шт.</b>
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
 
