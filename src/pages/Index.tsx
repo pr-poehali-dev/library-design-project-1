@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Icon from "@/components/ui/icon";
+import OutletPlanner from "@/components/OutletPlanner";
 
 const zones = [
   {
@@ -256,6 +257,15 @@ export default function Index() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Outlet Planner */}
+        <div className="mb-8">
+          <OutletPlanner
+            zoneColor={zone.color}
+            zoneBgLight={zone.bgLight}
+            zoneTitle={zone.title}
+          />
         </div>
 
         {/* Floor Plan */}
